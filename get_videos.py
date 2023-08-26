@@ -77,6 +77,7 @@ def get_video_links():
             video_links.append(video_link)
             index += 1
             if(index % 10 == 0):
+                clear()
                 print("Videos found: " + str(index) + "/" + str(numOfVideos))
 
         prevRowLen = len(rows)
@@ -142,13 +143,18 @@ def download_videos_as_mp3(video_links = None):
 
     while count < len(video_links):
 
+        titles = []
+
         downloadCount = 0
         while downloadCount < bufferSize and count + downloadCount < len(video_links):
             yt = pt.YouTube(video_links[count + downloadCount])
             video = yt.streams.filter(file_extension='mp4').first()
             dest = "Playlist\\"
             video.download(output_path=dest)
-            print("\"" + yt.title + "\" has been successfully downloaded.")
+            title = yt.title
+            title = "".join(filter(lambda char: char not in ['#','%','&','{','}','\\','<','>','*','?','/','$','!','\'','\"',':','@','+','`','|','='], title))
+            print("\"" + title + "\" has been successfully downloaded.")
+            titles.append(title)
             downloadCount += 1
         
         sleep(1)
@@ -161,21 +167,16 @@ def download_videos_as_mp3(video_links = None):
         sleep(2)
         clear()
         
-        convertCount = 0
-        for files in os.listdir("Playlist\\"):
-            if files.endswith(".mp4"):
-                video = VideoFileClip("Playlist/" + files)
-                video.audio.write_audiofile("Playlist/" + files[:-4] + ".mp3", verbose=False, logger=None)
-                video.close()
-                print("\"" + files[:-4] + ".mp3" + "\" - CREATED")
-                sleep(0.2)
-                os.remove(r"Playlist/" + files)
-                print("\"" + files + "\" - DELETED\n")
-                convertCount += 1
-                if convertCount == bufferSize:
-                    break
+        for files in titles:
+            video = VideoFileClip("Playlist/" + files + ".mp4")
+            video.audio.write_audiofile("Playlist/" + files + ".mp3", verbose=False, logger=None)
+            video.close()
+            print("\"" + files + ".mp3" + "\" - CREATED")
+            sleep(0.2)
+            os.remove(r"Playlist/" + files + ".mp4")
+            print("\"" + files + ".mp4\" - DELETED\n")
         
-        count += (convertCount)
+        count += downloadCount
         if count % 10 == 0:
             print("\nVideos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
         
@@ -206,6 +207,6 @@ def remove_http():
     with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
        
-get_video_links()
+# get_video_links()
 # remove_http()
 download_videos_as_mp3()
