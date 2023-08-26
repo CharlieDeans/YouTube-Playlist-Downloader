@@ -19,10 +19,11 @@ The use of this program is quite simple. Make sure you've got Python installed. 
 # NOTICE
 
 I am not affiliated in anyway with:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-The teams, owners, or devs who control TikTokApi
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Selenium, webdriver-manager
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-or moviepy.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TikTok or ByteDance.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-The teams, owners, or devs who control TikTokApi  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Selenium, webdriver-manager  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Moviepy.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Pytube.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-YouTube or Google.  
 I do not encourage nor condone the use of this code in anyway that would break or in anyway oppose:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-The Terms & Conditions or policies of TikTok or ByteDance  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-The Terms & Conditions or policies of YouTube or Google.  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Applicable copyright laws outside of fair use.
