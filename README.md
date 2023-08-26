@@ -3,8 +3,7 @@
 <!-- For a new paragraph press (Enter) twice -->
 <!-- For a new line press (Space) twice followed by (Enter) once-->
 
-# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WELCOME TO THE SIMPLE TO USE  
-# TIKTOK-"COMPILATION-INATOR"-INATOR
+# WELCOME TO THE SIMPLE TO USE TIKTOK-"COMPILATION-INATOR"-INATOR
 
 The use of this program is quite simple. Make sure you've got Python installed. Preferably the newest.  
 -Run setup.py to install your requirements or use  
