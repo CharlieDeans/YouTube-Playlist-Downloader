@@ -12,6 +12,8 @@ from time import sleep
 import json
 import os
 
+os.system("pip install -r selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3")
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -207,6 +209,6 @@ def remove_http():
     with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
        
-# get_video_links()
+get_video_links()
 # remove_http()
 download_videos_as_mp3()
