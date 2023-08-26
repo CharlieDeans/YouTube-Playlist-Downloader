@@ -7,7 +7,7 @@
 
 The use of this program is quite simple. Make sure you've got Python installed. Preferably the newest.  
 -Run setup.py to install your requirements or use  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-pip install -r requirements.txt'  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-'pip install -r requirements.txt'  
 -Run get_videos.py to start the process.  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-It will ask for a YouTube playlist link. Copy your link and paste it into the CLI.  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-It will then create a 'video.json' file when just has all of the video links.  
