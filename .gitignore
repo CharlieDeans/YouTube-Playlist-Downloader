@@ -1,4 +1,7 @@
-Videos/
+Playlist/
 __pycache__/
 *.mp3
 *.mp4
+*.exe
+*.json
+BUILD/
