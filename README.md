@@ -3,7 +3,7 @@
 <!-- For a new paragraph press (Enter) twice -->
 <!-- For a new line press (Space) twice followed by (Enter) once-->
 
-# WELCOME TO THE YouTube Playlist Downloader
+# Welcome to the YouTube Playlist Downloader
 
 The use of this program is quite simple. Make sure you've got Python installed. Preferably the newest.  
 -Run setup.py to install your requirements or use  
