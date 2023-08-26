@@ -86,8 +86,8 @@ def get_video_links():
     print("There are " + str(numOfVideos - index) + " videos hidden in the playlist")
 
 
-    # add the videos in videos_list to videos.json
-    with open('videos.json', 'w') as output:
+    # add the videos in videos_list to playlist.json
+    with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
 
     sleep(2)
@@ -101,11 +101,11 @@ def download_videos_as_mp3(video_links = None):
 
     if video_links == None:
         # get the videos from the json file
-        if not os.path.exists('videos.json'):
+        if not os.path.exists('playlist.json'):
             print("No videos found")
             exit()
         else:
-            with open('videos.json') as json_file:
+            with open('playlist.json') as json_file:
                 video_links = json.load(json_file)
     elif video_links.type() == str:
         video_links = [video_links]
@@ -113,7 +113,7 @@ def download_videos_as_mp3(video_links = None):
     # # download the videos with youtube-dl
     # for video_link in video_links:
     #     video_info = youtube_dl.YoutubeDL().extract_info(url=video_link, download=False)
-    #     filename = f"Videos/{video_info['title']}.mp3"
+    #     filename = f"Playlist/{video_info['title']}.mp3"
     #     options = {
     #         'format': 'bestaudio/best',
     #         'keepvideo': False,
@@ -125,16 +125,28 @@ def download_videos_as_mp3(video_links = None):
     #     print(f"Downloaded {video_info['title']}")
 
     #     exit()
+    
+    clear()
+    
+    print("Number of videos to download: " + str(len(video_links)))
+    bufferSize = input("Set buffer size (DEFAULT: 5): ")
+
+    clear()
+
+    if bufferSize == "":
+        bufferSize = 5
+    else:
+        bufferSize = int(bufferSize)
 
     count = 0
 
     while count < len(video_links):
 
         downloadCount = 0
-        while downloadCount < 5 and count + downloadCount < len(video_links):
+        while downloadCount < bufferSize and count + downloadCount < len(video_links):
             yt = pt.YouTube(video_links[count + downloadCount])
             video = yt.streams.filter(file_extension='mp4').first()
-            dest = "Videos\\"
+            dest = "Playlist\\"
             video.download(output_path=dest)
             print("\"" + yt.title + "\" has been successfully downloaded.")
             downloadCount += 1
@@ -150,17 +162,17 @@ def download_videos_as_mp3(video_links = None):
         clear()
         
         convertCount = 0
-        for files in os.listdir("Videos\\"):
+        for files in os.listdir("Playlist\\"):
             if files.endswith(".mp4"):
-                video = VideoFileClip("Videos/" + files)
-                video.audio.write_audiofile("Videos/" + files[:-4] + ".mp3", verbose=False, logger=None)
+                video = VideoFileClip("Playlist/" + files)
+                video.audio.write_audiofile("Playlist/" + files[:-4] + ".mp3", verbose=False, logger=None)
                 video.close()
                 print("\"" + files[:-4] + ".mp3" + "\" - CREATED")
                 sleep(0.2)
-                os.remove(r"Videos/" + files)
+                os.remove(r"Playlist/" + files)
                 print("\"" + files + "\" - DELETED\n")
                 convertCount += 1
-                if convertCount == 5:
+                if convertCount == bufferSize:
                     break
         
         count += (convertCount)
@@ -177,18 +189,21 @@ def download_videos_as_mp3(video_links = None):
             
             sleep(2)
             clear()
+        else:
+            sleep(1)
+            clear()
     
-    print("\nVideos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
+    print("Videos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
         
 
 def remove_http():
-    with open('videos.json') as json_file:
+    with open('playlist.json') as json_file:
         video_links = json.load(json_file)
     
     for i in range(len(video_links)):
         video_links[i] = video_links[i].split("://")[1]
     
-    with open('videos.json', 'w') as output:
+    with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
        
 get_video_links()
