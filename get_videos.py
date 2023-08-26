@@ -12,7 +12,8 @@ from time import sleep
 import json
 import os
 
-
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def get_video_links():
     # set the download directory
@@ -22,10 +23,15 @@ def get_video_links():
     # create the driver
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
 
+    clear()
+    
     # get the playlist link
     print("Enter the playlist link: ")
     video_link = input()
-
+    
+    sleep(2)
+    clear()
+    
     # open the website and enter the video link
     driver.get(video_link)
     numOfVideos = driver.find_element("xpath", "//*[@id=\"page-manager\"]/ytd-browse/ytd-playlist-header-renderer/div/div[2]/div[1]/div/div[1]/div[1]/ytd-playlist-byline-renderer/div/yt-formatted-string[1]/span[1]").text
@@ -42,9 +48,14 @@ def get_video_links():
     for i in range(len(numOfVideos_list)):
         numOfVideos_list[i] = numOfVideos_list[i].strip()
 
+    clear()
+
     print("Number of videos in the playlist: " + str(numOfVideos))
 
     print("\nGetting videos from the playlist...")
+
+    sleep(2)
+    clear()
 
     video_links = []
     index = 0
@@ -79,9 +90,14 @@ def get_video_links():
     with open('videos.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
 
+    sleep(2)
+    clear()
+
     return video_links
 
 def download_videos_as_mp3(video_links = None):
+
+    clear()
 
     if video_links == None:
         # get the videos from the json file
@@ -112,24 +128,57 @@ def download_videos_as_mp3(video_links = None):
 
     count = 0
 
-    for video_link in video_links:
-        yt = pt.YouTube(video_link)
-        video = yt.streams.filter(file_extension='mp4').first()
-        dest = "Videos\\"
-        video.download(output_path=dest)
-        print(yt.title + " has been successfully downloaded.")
-        count += 1
+    while count < len(video_links):
+
+        downloadCount = 0
+        while downloadCount < 5 and count + downloadCount < len(video_links):
+            yt = pt.YouTube(video_links[count + downloadCount])
+            video = yt.streams.filter(file_extension='mp4').first()
+            dest = "Videos\\"
+            video.download(output_path=dest)
+            print("\"" + yt.title + "\" has been successfully downloaded.")
+            downloadCount += 1
+        
+        sleep(1)
+        clear()
+        
+        print("Preparing to convert videos to mp3...")
+        sleep(2)
+        print("Converting videos to mp3...")
+        
+        sleep(2)
+        clear()
+        
+        convertCount = 0
+        for files in os.listdir("Videos\\"):
+            if files.endswith(".mp4"):
+                video = VideoFileClip("Videos/" + files)
+                video.audio.write_audiofile("Videos/" + files[:-4] + ".mp3", verbose=False, logger=None)
+                video.close()
+                print("\"" + files[:-4] + ".mp3" + "\" - CREATED")
+                sleep(0.2)
+                os.remove(r"Videos/" + files)
+                print("\"" + files + "\" - DELETED\n")
+                convertCount += 1
+                if convertCount == 5:
+                    break
+        
+        count += (convertCount)
+        if count % 10 == 0:
+            print("\nVideos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
+        
+        if count < len(video_links):
+            sleep(1)
+            clear()
+            
+            print("Preparing to convert more videos...")
+            sleep(2)
+            print("Converting videos...")
+            
+            sleep(2)
+            clear()
     
-    print("\nPreparing to convert videos to mp3...")
-    sleep(10)
-    print("Converting videos to mp3...")
-    
-    for files in os.listdir("Videos\\"):
-        if files.endswith(".mp4"):
-            video = VideoFileClip("Videos/" + files)
-            video.audio.write_audiofile("Videos/" + files[:-4] + ".mp3")
-            video.close()
-            os.remove(r"Videos/" + files)
+    print("\nVideos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
         
 
 def remove_http():
@@ -141,7 +190,7 @@ def remove_http():
     
     with open('videos.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
-        
+       
 get_video_links()
 # remove_http()
 download_videos_as_mp3()
