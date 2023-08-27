@@ -12,7 +12,7 @@ from time import sleep
 import json
 import os
 
-os.system("pip install -r selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3")
+os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3")
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -152,10 +152,11 @@ def download_videos_as_mp3(video_links = None):
             yt = pt.YouTube(video_links[count + downloadCount])
             video = yt.streams.filter(file_extension='mp4').first()
             dest = "Playlist\\"
-            video.download(output_path=dest)
-            title = yt.title
-            title = "".join(filter(lambda char: char not in ['#','%','&','{','}','\\','<','>','*','?','/','$','!','\'','\"',':','@','+','`','|','='], title))
+            test = video.download(output_path=dest)
+            title = (test.split("\\Playlist\\")[1]).split(".mp4")[0]
             print("\"" + title + "\" has been successfully downloaded.")
+            os.rename(r"Playlist/" + title + ".mp4", r"Playlist/" + title + "_" + str(count + downloadCount + 1) + ".mp4")
+            title = title + "_" + str(count + downloadCount + 1)
             titles.append(title)
             downloadCount += 1
         
