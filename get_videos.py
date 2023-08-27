@@ -4,6 +4,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from moviepy.editor import *
+from threading import Thread
+from inputimeout import inputimeout
 
 import pytube as pt
 
@@ -13,18 +15,30 @@ import json
 import os
 
 os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3")
-os.mkdir("Playlist")
+
+if not os.path.exists('Playlist'):
+    os.mkdir("Playlist")
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+bufferSize = 1
+
+try:
+    bufferSize = int(inputimeout("Set buffer size (DEFAULT: 5): ", timeout=10))
+except Exception:
+    bufferSize = 5
+
+print("Using buffer size of " + str(bufferSize))
+
+clear()
 
 def get_video_links():
     # set the download directory
     chromeOptions = Options()
     chromeOptions.add_argument("--headless")
 
-    # create the driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
+    
 
     clear()
     
@@ -35,8 +49,23 @@ def get_video_links():
     sleep(2)
     clear()
     
+    driverMade = False
+    count = 0
+
+    while driverMade == False:
+        try:
+            # create the driver
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
+            driver.get(video_link)
+            driverMade = True
+        except:
+            print("Trying to create driver again...")
+            count += 1
+            if count >= 5:
+                print("Failed")
+                exit()
+    
     # open the website and enter the video link
-    driver.get(video_link)
     numOfVideos = driver.find_element("xpath", "//*[@id=\"page-manager\"]/ytd-browse/ytd-playlist-header-renderer/div/div[2]/div[1]/div/div[1]/div[1]/ytd-playlist-byline-renderer/div/yt-formatted-string[1]/span[1]").text
     numOfVideos_list = str(numOfVideos).split(",")
 
@@ -99,20 +128,19 @@ def get_video_links():
 
     return video_links
 
-def download_videos_as_mp3(video_links = None):
+def download_videos_as_mp3(video_links = None, bufferSize = 5, identify = 0, logEnable = True):
 
     clear()
 
     if video_links == None:
         # get the videos from the json file
         if not os.path.exists('playlist.json'):
-            print("No videos found")
+            if(logEnable):
+                print("No videos found")
             exit()
         else:
             with open('playlist.json') as json_file:
                 video_links = json.load(json_file)
-    elif video_links.type() == str:
-        video_links = [video_links]
 
     # # download the videos with youtube-dl
     # for video_link in video_links:
@@ -130,10 +158,6 @@ def download_videos_as_mp3(video_links = None):
 
     #     exit()
     
-    clear()
-    
-    print("Number of videos to download: " + str(len(video_links)))
-    bufferSize = input("Set buffer size (DEFAULT: 5): ")
 
     clear()
 
@@ -160,13 +184,16 @@ def download_videos_as_mp3(video_links = None):
                 dest = "Playlist\\"
                 test = video.download(output_path=dest)
                 title = (test.split("\\Playlist\\")[1]).split(".mp4")[0]
-                print("\"" + title + "\" has been successfully downloaded.")
-                os.rename(r"Playlist/" + title + ".mp4", r"Playlist/" + title + "_" + str(count + downloadCount + 1) + ".mp4")
-                title = title + "_" + str(count + downloadCount + 1)
+                if(logEnable):
+                    print("\"" + title + "\" has been successfully downloaded.")
+                newTitle = title + "_" + str(identify + count + downloadCount + 1)
+                os.rename(r"Playlist/" + title + ".mp4", r"Playlist/" + newTitle + ".mp4")
+                title = newTitle
                 titles.append(title)
                 successCount += 1
             except:
-                print("Failed to download video")
+                if(logEnable):
+                    print("Failed to download video")
                 failed = True
                 failedFiles.append(video_links[count + downloadCount])
                 
@@ -174,16 +201,20 @@ def download_videos_as_mp3(video_links = None):
             
         
         if failed:
-            print("Failed to download video")
+            if(logEnable):
+                print("Failed to download video")
             
         
         else:
             sleep(1)
             clear()
             
-            print("Preparing to convert videos to mp3...")
-            sleep(2)
-            print("Converting videos to mp3...")
+            if(logEnable):
+                print("Preparing to convert videos to mp3...")
+                sleep(2)
+                print("Converting videos to mp3...")
+            else:
+                sleep(2)
             
             sleep(2)
             clear()
@@ -192,22 +223,28 @@ def download_videos_as_mp3(video_links = None):
                 video = VideoFileClip("Playlist/" + files + ".mp4")
                 video.audio.write_audiofile("Playlist/" + files + ".mp3", verbose=False, logger=None)
                 video.close()
-                print("\"" + files + ".mp3" + "\" - CREATED")
+                if(logEnable):
+                    print("\"" + files + ".mp3" + "\" - CREATED")
                 sleep(0.2)
                 os.remove(r"Playlist/" + files + ".mp4")
-                print("\"" + files + ".mp4\" - DELETED\n")
+                if(logEnable):
+                    print("\"" + files + ".mp4\" - DELETED\n")
         
         count += downloadCount
         if count % 10 == 0:
-            print("\nVideos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
+            if(logEnable):
+                print("\nVideos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
         
         if count < len(video_links):
             sleep(1)
             clear()
             
-            print("Preparing to convert more videos...")
-            sleep(2)
-            print("Converting videos...")
+            if(logEnable):
+                print("Preparing to convert more videos...")
+                sleep(2)
+                print("Converting videos...")
+            else:
+                sleep(2)
             
             sleep(2)
             clear()
@@ -219,19 +256,108 @@ def download_videos_as_mp3(video_links = None):
         with open('Playlist/failed.json', 'w') as output:
             output.write(json.dumps(failedFiles, indent=4))
     
-    print("Videos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
+    if(logEnable):
+        print("Videos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
         
 
-def remove_http():
+# def remove_http():
+#     with open('playlist.json') as json_file:
+#         video_links = json.load(json_file)
+    
+#     for i in range(len(video_links)):
+#         video_links[i] = video_links[i].split("://")[1]
+    
+#     with open('playlist.json', 'w') as output:
+#         output.write(json.dumps(video_links, indent=4))
+
+clear()
+response = False
+if os.path.exists('playlist.json'):
+    value = input("Do you want to use the videos stored in playlist.json? (y/n): ")
+    
+    if value.lower() == "y" or value.lower() == "yes":
+        response = True
+        
+list = []
+        
+if not response:
+    list = get_video_links()
+
+else:
     with open('playlist.json') as json_file:
-        video_links = json.load(json_file)
+        list = json.load(json_file)
+    sleep(3)
+
+clear()
+
+numOfThreadsToUse = os.cpu_count()
+
+try:
+    numOfThreadsToUse = int(inputimeout("How many Threads do you want to use? (DEFAULT: Max Number of Logical Processors): ", timeout=20))
+except Exception:
+    None
     
-    for i in range(len(video_links)):
-        video_links[i] = video_links[i].split("://")[1]
+print("Using " + str(numOfThreadsToUse) + " Thread" + ("s" if numOfThreadsToUse > 1 else ""))
+
+sleep(3)
+clear()
+
+cpus = []
+
+count = numOfThreadsToUse
+
+if len(list) < numOfThreadsToUse:
+    count = len(list)
+
+cpuSize = len(list) // count
+
+numOfElement = len(list)
+index = 0
+
+
+for i in range(count):
+    newList = []
     
-    with open('playlist.json', 'w') as output:
-        output.write(json.dumps(video_links, indent=4))
-       
-get_video_links()
-# remove_http()
-download_videos_as_mp3()
+    numToAdd = cpuSize
+    
+    if numOfElement - numToAdd < numToAdd:
+        numToAdd = numOfElement
+        
+    for j in range(index, index + numToAdd):
+        newList.append(list[j])
+        numOfElement -= 1
+    
+    index += numToAdd
+    
+    cpus.append(newList)
+    
+threads = []
+
+clear()
+
+log = False
+
+if(numOfThreadsToUse > 1):
+    try:
+        print("--PLEASE BE ADVISED, THIS PRINTING IS NOT VERY READABLE--")
+        log = inputimeout("Do you want progress to be printed to screen? (y/n): ", timeout=10)
+        if log.lower() == "y" or log.lower() == "yes":
+            log = True
+        else:
+            log = False
+    except Exception:
+        clear()
+else:
+    log = True
+
+identify = 0
+for thread in cpus:
+    threads.append(Thread(target=download_videos_as_mp3, args=(thread,bufferSize,identify,log)))
+    identify += len(thread)
+    # download_videos_as_mp3(thread)
+
+for thread in threads:
+    thread.start()
+
+clear()
+print("Finished!")
