@@ -13,6 +13,7 @@ import json
 import os
 
 os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3")
+os.mkdir("Playlist")
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -144,6 +145,8 @@ def download_videos_as_mp3(video_links = None):
     count = 0
     successCount = 0
     failedFiles = []
+    
+    
 
     while count < len(video_links):
         failed = False
