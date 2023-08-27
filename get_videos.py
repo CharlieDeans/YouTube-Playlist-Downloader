@@ -142,46 +142,61 @@ def download_videos_as_mp3(video_links = None):
         bufferSize = int(bufferSize)
 
     count = 0
+    successCount = 0
+    failedFiles = []
 
     while count < len(video_links):
-
+        failed = False
         titles = []
 
         downloadCount = 0
         while downloadCount < bufferSize and count + downloadCount < len(video_links):
-            yt = pt.YouTube(video_links[count + downloadCount])
-            video = yt.streams.filter(file_extension='mp4').first()
-            dest = "Playlist\\"
-            test = video.download(output_path=dest)
-            title = (test.split("\\Playlist\\")[1]).split(".mp4")[0]
-            print("\"" + title + "\" has been successfully downloaded.")
-            os.rename(r"Playlist/" + title + ".mp4", r"Playlist/" + title + "_" + str(count + downloadCount + 1) + ".mp4")
-            title = title + "_" + str(count + downloadCount + 1)
-            titles.append(title)
+            try:
+                yt = pt.YouTube(video_links[count + downloadCount])
+                video = yt.streams.filter(file_extension='mp4').first()
+                dest = "Playlist\\"
+                test = video.download(output_path=dest)
+                title = (test.split("\\Playlist\\")[1]).split(".mp4")[0]
+                print("\"" + title + "\" has been successfully downloaded.")
+                os.rename(r"Playlist/" + title + ".mp4", r"Playlist/" + title + "_" + str(count + downloadCount + 1) + ".mp4")
+                title = title + "_" + str(count + downloadCount + 1)
+                titles.append(title)
+                successCount += 1
+            except:
+                print("Failed to download video")
+                failed = True
+                failedFiles.append(video_links[count + downloadCount])
+                
             downloadCount += 1
+            
         
-        sleep(1)
-        clear()
+        if failed:
+            print("Failed to download video")
+            
         
-        print("Preparing to convert videos to mp3...")
-        sleep(2)
-        print("Converting videos to mp3...")
-        
-        sleep(2)
-        clear()
-        
-        for files in titles:
-            video = VideoFileClip("Playlist/" + files + ".mp4")
-            video.audio.write_audiofile("Playlist/" + files + ".mp3", verbose=False, logger=None)
-            video.close()
-            print("\"" + files + ".mp3" + "\" - CREATED")
-            sleep(0.2)
-            os.remove(r"Playlist/" + files + ".mp4")
-            print("\"" + files + ".mp4\" - DELETED\n")
+        else:
+            sleep(1)
+            clear()
+            
+            print("Preparing to convert videos to mp3...")
+            sleep(2)
+            print("Converting videos to mp3...")
+            
+            sleep(2)
+            clear()
+            
+            for files in titles:
+                video = VideoFileClip("Playlist/" + files + ".mp4")
+                video.audio.write_audiofile("Playlist/" + files + ".mp3", verbose=False, logger=None)
+                video.close()
+                print("\"" + files + ".mp3" + "\" - CREATED")
+                sleep(0.2)
+                os.remove(r"Playlist/" + files + ".mp4")
+                print("\"" + files + ".mp4\" - DELETED\n")
         
         count += downloadCount
         if count % 10 == 0:
-            print("\nVideos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
+            print("\nVideos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
         
         if count < len(video_links):
             sleep(1)
@@ -196,8 +211,15 @@ def download_videos_as_mp3(video_links = None):
         else:
             sleep(1)
             clear()
+            
+        if successCount > 3:
+            break
     
-    print("Videos downloaded: " + str(count) + "/" + str(len(video_links)), end="\n\n")
+    if len(failedFiles) > 0:
+        with open('Playlist/failed.json', 'w') as output:
+            output.write(json.dumps(failedFiles, indent=4))
+    
+    print("Videos downloaded: " + str(successCount) + "/" + str(len(video_links)), end="\n\n")
         
 
 def remove_http():
@@ -210,6 +232,6 @@ def remove_http():
     with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
        
-get_video_links()
+# get_video_links()
 # remove_http()
 download_videos_as_mp3()
