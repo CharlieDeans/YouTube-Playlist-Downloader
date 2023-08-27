@@ -211,9 +211,6 @@ def download_videos_as_mp3(video_links = None):
         else:
             sleep(1)
             clear()
-            
-        if successCount > 3:
-            break
     
     if len(failedFiles) > 0:
         with open('Playlist/failed.json', 'w') as output:
@@ -232,6 +229,6 @@ def remove_http():
     with open('playlist.json', 'w') as output:
         output.write(json.dumps(video_links, indent=4))
        
-# get_video_links()
+get_video_links()
 # remove_http()
 download_videos_as_mp3()
