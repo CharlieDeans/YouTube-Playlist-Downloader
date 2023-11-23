@@ -1,5 +1,5 @@
 selenium==4.11.2
 webdriver-manager==4.0.0
 pytube==15.0.0
-inputtimeout==1.0.4
+inputimeout==1.0.4
 moviepy==1.0.3
