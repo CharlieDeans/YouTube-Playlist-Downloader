@@ -14,7 +14,7 @@ from time import sleep
 import json
 import os
 
-os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputtimeout==1.0.4")
+os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputimeout==1.0.4")
 
 if not os.path.exists('Playlist'):
     os.mkdir("Playlist")
