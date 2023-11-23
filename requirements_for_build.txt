@@ -2,4 +2,5 @@ selenium==4.11.2
 webdriver-manager==4.0.0
 pytube==15.0.0
 moviepy==1.0.3
+inputtimeout==1.0.4
 pyinstaller==5.13.0
