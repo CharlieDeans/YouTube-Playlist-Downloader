@@ -38,7 +38,7 @@ clear()
 def get_video_links():
     # set the download directory
     chromeOptions = Options()
-    # chromeOptions.add_argument("--headless")
+    chromeOptions.add_argument("--headless")
 
     
 
@@ -222,7 +222,7 @@ def download_videos_as_mp3(video_links = None, bufferSize = 5, identify = 0, log
                 if not(convert):
                     for resolution in resolutions:
                         try:
-                            video = yt.streams.filter(file_extension='mp4', res=[resolution]).first()
+                            video = yt.streams.filter(file_extension='mp4', res=[resolution], audio_codec="mp4a.40.2").first()
                             dest = "Playlist\\"
                             test = video.download(output_path=dest)
                             break
