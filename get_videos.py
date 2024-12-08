@@ -88,8 +88,6 @@ def get_video_links():
     # open the website and enter the video link
     try:
         numOfVideos = len(driver.find_elements(By.XPATH, "//*[@id=\"contents\"]")[-1].find_elements(By.TAG_NAME, "ytd-playlist-video-renderer"))
-        print(numOfVideos)
-        exit()
     except:
         print("Couldn't get numOfVideos")
         exit()
