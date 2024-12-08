@@ -16,7 +16,7 @@ import os
 
 resolutions = ["1080p","720p","480p","360p","240p","144p"]
 
-os.system("pip install selenium webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputimeout==1.0.4")
+os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputimeout==1.0.4")
 
 if not os.path.exists('Playlist'):
     os.mkdir("Playlist")
