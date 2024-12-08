@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from moviepy.editor import *
@@ -86,22 +87,24 @@ def get_video_links():
     
     # open the website and enter the video link
     try:
-        numOfVideos = driver.find_element("xpath", "//*[@id=\"page-manager\"]/ytd-browse/yt-page-header-renderer/yt-page-header-view-model/div[2]/div[1]/div/yt-content-metadata-view-model/div[2]/span[3]").text.split(" ")[0]
+        numOfVideos = len(driver.find_elements(By.XPATH, "//*[@id=\"contents\"]")[-1].find_elements(By.TAG_NAME, "ytd-playlist-video-renderer"))
+        print(numOfVideos)
+        exit()
     except:
         print("Couldn't get numOfVideos")
         exit()
-    numOfVideos_list = str(numOfVideos).split(",")
+    # numOfVideos_list = str(numOfVideos).split(",")
+    
+    # numOfVideos_list.reverse()
+    # columb = 0
+    # numOfVideos = 0
 
-    numOfVideos_list.reverse()
-    columb = 0
-    numOfVideos = 0
+    # for i in range(len(numOfVideos_list)):
+    #     numOfVideos += int(numOfVideos_list[i]) * (pow(10, columb))
+    #     columb += 3
 
-    for i in range(len(numOfVideos_list)):
-        numOfVideos += int(numOfVideos_list[i]) * (pow(10, columb))
-        columb += 3
-
-    for i in range(len(numOfVideos_list)):
-        numOfVideos_list[i] = numOfVideos_list[i].strip()
+    # for i in range(len(numOfVideos_list)):
+    #     numOfVideos_list[i] = numOfVideos_list[i].strip()
 
     clear()
 
