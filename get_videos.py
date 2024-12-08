@@ -38,7 +38,7 @@ clear()
 def get_video_links():
     # set the download directory
     chromeOptions = Options()
-    chromeOptions.add_argument("--headless")
+    # chromeOptions.add_argument("--headless")
 
     
 
@@ -85,7 +85,11 @@ def get_video_links():
                 exit()
     
     # open the website and enter the video link
-    numOfVideos = driver.find_element("xpath", "//*[@id=\"page-manager\"]/ytd-browse/ytd-playlist-header-renderer/div/div[2]/div[1]/div/div[1]/div[1]/ytd-playlist-byline-renderer/div/yt-formatted-string[1]/span[1]").text
+    try:
+        numOfVideos = driver.find_element("xpath", "//*[@id=\"page-manager\"]/ytd-browse/yt-page-header-renderer/yt-page-header-view-model/div[2]/div[1]/div/yt-content-metadata-view-model/div[2]/span[3]").text.split(" ")[0]
+    except:
+        print("Couldn't get numOfVideos")
+        exit()
     numOfVideos_list = str(numOfVideos).split(",")
 
     numOfVideos_list.reverse()
@@ -114,15 +118,27 @@ def get_video_links():
 
     while index < numOfVideos:
         sleep(5)
-        table = driver.find_element("xpath", "//*[@id=\"contents\"]")
-        rows = table.find_elements("xpath", ".//ytd-playlist-video-renderer")
+        try:
+            table = driver.find_element("xpath", "//*[@id=\"contents\"]")
+        except:
+            print("Failed to get table")
+            exit()
+        try:
+            rows = table.find_elements("xpath", ".//ytd-playlist-video-renderer")
+        except:
+            print("Failed to get rows")
+            exit()
         if prevRowLen == len(rows):
             print("No more videos to find")
             break
 
         # get the video link from each row
         while index < len(rows):
-            video = rows[index].find_element("xpath", ".//a[@id=\"thumbnail\"]")
+            try:
+                video = rows[index].find_element("xpath", ".//a[@id=\"thumbnail\"]")
+            except:
+                print("Failed to get video xpath")
+                exit()
             video_link = video.get_attribute("href")
             video_link = video_link.split("&list=")[0]
             video_links.append(video_link)
@@ -132,7 +148,11 @@ def get_video_links():
                 print("Videos found: " + str(index) + "/" + str(numOfVideos))
 
         prevRowLen = len(rows)
-        rows[index-1].find_element("xpath", ".//a[@id=\"thumbnail\"]").send_keys(Keys.PAGE_DOWN)
+        try:
+            rows[index-1].find_element("xpath", ".//a[@id=\"thumbnail\"]").send_keys(Keys.PAGE_DOWN)
+        except:
+            print(f"Failed to get row {index-1}")
+            exit()
 
     print("Videos found: " + str(index) + "/" + str(numOfVideos))
     print("There are " + str(numOfVideos - index) + " videos hidden in the playlist")
