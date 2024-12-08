@@ -16,7 +16,7 @@ import os
 
 resolutions = ["1080p","720p","480p","360p","240p","144p"]
 
-os.system("pip install selenium==4.11.2 webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputimeout==1.0.4")
+os.system("pip install selenium webdriver-manager==4.0.0 pytube==15.0.0 moviepy==1.0.3 inputimeout==1.0.4")
 
 if not os.path.exists('Playlist'):
     os.mkdir("Playlist")
@@ -54,13 +54,30 @@ def get_video_links():
     driverMade = False
     count = 0
 
+    # while driverMade == False:
+    #     try:
+    #         # create the driver
+    #         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
+    #         driver.get(video_link)
+    #         driverMade = True
+    #     except Exception as e:
+    #         print(e)
+    #         sleep(10)
+    #         print("Trying to create driver again...")
+    #         count += 1
+    #         if count >= 5:
+    #             print("Failed")
+    #             exit()
+    
     while driverMade == False:
         try:
-            # create the driver
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chromeOptions)
+            # create the driver           
+            driver = webdriver.Chrome(service=Service(os.path.join(os.getcwd(),"chromedriver.exe")), options=chromeOptions)
             driver.get(video_link)
             driverMade = True
-        except:
+        except Exception as e:
+            print(e)
+            sleep(10)
             print("Trying to create driver again...")
             count += 1
             if count >= 5:
